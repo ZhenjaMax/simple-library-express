@@ -1,0 +1,84 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        style
+            include ../public/w3.css
+        script
+            include ../public/book.js
+        title Библиотека
+    body.w3-blue-grey
+        header.w3-indigo.w3-content.w3-center
+            h1.w3-border-amber.w3-border
+                b.w3-jumbo.w3-text-amber Библиотека
+
+        div.w3-border-amber.w3-border.w3-content.w3-center.w3-indigo
+            button.w3-bar-item.w3-button.w3-hover-white.w3-margin-left(onclick = 'window.location.href="/"') Все книги
+            button.w3-bar-item.w3-button.w3-hover-white.w3-margin-left(disabled) В наличии
+            button.w3-bar-item.w3-button.w3-hover-white.w3-margin-left(disabled) Просроченные
+            button.w3-bar-item.w3-button.w3-hover-white.w3-margin-left(disabled) Добавить
+
+        div.w3-container.w3-center.w3-indigo.w3-border-amber.w3-border(style = 'max-width: 900px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%)')
+            br
+            div.w3-content.w3-center.w3-indigo
+                b.w3-text-amber.w3-xlarge.w3-center Информация о книге
+            br
+            table.w3-table.w3-xlarge.w3-left
+                tr
+                    td Название:
+                    td#name=book.name
+                tr
+                    td Автор:
+                    td#author=book.author
+                tr
+                    td Год:
+                    td#year=book.year
+                tr
+                    td Статус:
+                    td#status=((book.bookingDate === 0) ? "В наличии" : (book.bookingDate >= Date.now()) ? "Забронирована" : "Просрочена")
+                tr
+                    td#readerHeader(style = (book.reader === '' ? 'display: none' : '')) Читатель:
+                    td#reader(style = (book.reader === '' ? 'display: none' : ''))=book.reader
+                tr
+                    td#bookingDateHeader(style = (book.reader === '' ? 'display: none' : '')) Выдана до:
+                    td#bookingDate(style = (book.reader === '' ? 'display: none' : ''))=new Date(book.bookingDate).toLocaleDateString("en-US")
+            div.w3-bar.w3-margin-top(style = "width: 300px")
+                if (book.reader === '')
+                    button.give.w3-button.w3-gray.w3-hover-white(onclick = 'document.getElementById("modal").style.display="block"', style = 'width: 50%') Выдать книгу
+                    button.back.w3-button.w3-gray.w3-hover-white(onclick = `changeReader(${book.id})`, style = 'width: 50%', disabled) Вернуть книгу
+                else
+                    button.give.w3-button.w3-gray.w3-hover-white(onclick = 'document.getElementById("modal").style.display="block"', style = 'width: 50%', disabled) Выдать книгу
+                    button.back.w3-button.w3-gray.w3-hover-white(onclick = `changeReader(${book.id})`, style = 'width: 50%') Вернуть книгу
+            div.w3-bar(style = "width: 300px")
+                button.w3-button.w3-gray.w3-hover-white(onclick = 'document.getElementById("change").style.display="block"', style = 'width: 50%') Изменить книгу
+                button.w3-button.w3-gray.w3-hover-white(onclick = 'document.getElementById("delete").style.display="block"', style = 'width: 50%') Удалить книгу
+
+        div#delete.w3-modal
+            div.w3-modal-content(style = 'width: 30%')
+                div.w3-container.w3-white.w3-border-amber.w3-border
+                    h3.w3-center.w3-text-black Удаление книги
+                    p.w3-center Вы действительно хотите удалить эту книгу?
+                        button.w3-button.w3-gray.w3-hover-indigo.w3-margin.w3-border-amber.w3-border(onclick = `document.getElementById("delete").style.display="none"; deleteBook(${book.id}); window.location.href="/"`, style = 'width: 30%') Да
+                        button.w3-button.w3-gray.w3-hover-indigo.w3-margin.w3-border-amber.w3-border(onclick = 'document.getElementById("delete").style.display="none";', style = 'width: 30%') Нет
+
+        div#modal.w3-modal
+            div.w3-modal-content
+                div.w3-container.w3-white.w3-border-amber.w3-border.w3-centered
+                    h3.w3-center.w3-text-black Выдача книги
+                    div.w3-margin
+                        input#inputReader.w3-margin.w3-input(name='reader', placeholder="Имя читателя", required)
+                        input#inputBookingDate.w3-margin.w3-input.w3-centered(name='back', type='date', placeholder="Дата возврата", required)
+                    div.w3-center
+                        button.w3-button.w3-gray.w3-hover-indigo.w3-margin.w3-border-amber.w3-border(style = 'width: 30%', onclick = `document.getElementById("modal").style.display="none"; changeReader(${book.id})`) Выдать
+                        button.w3-button.w3-gray.w3-hover-indigo.w3-margin.w3-border-amber.w3-border(style = 'width: 30%', onclick = 'document.getElementById("modal").style.display="none"') Отмена
+
+        div#change.w3-modal
+            div.w3-modal-content
+                div.w3-container.w3-white.w3-border-amber.w3-border.w3-centered
+                    h3.w3-center.w3-text-black Изменение книги
+                    input#nameInput.w3-input(name = 'name', style = 'margin: 5px 10px 5px 0', placeholder = "Название книги", value = `${book.name}`, required)
+                    input#authorInput.w3-input(name = 'author', style = 'margin: 5px 10px 5px 0', placeholder = "Автор", value = `${book.author}`, required)
+                    input#yearInput.w3-input(name = 'year', style = 'margin: 5px 10px 5px 0', placeholder = "Год издания", value = `${book.year}`, required)
+                    div.w3-center
+                        button.w3-button.w3-gray.w3-hover-indigo.w3-margin.w3-border-amber.w3-border(style = 'width: 30%', onclick = `document.getElementById("change").style.display="none"; changeBook(${book.id})`) Изменить
+                        button.w3-button.w3-gray.w3-hover-indigo.w3-margin.w3-border-amber.w3-border(style = 'width: 30%', onclick = 'document.getElementById("change").style.display="none"') Отмена
